@@ -281,11 +281,13 @@
 
 (defn test-model
   "Defines a property checking the model. Put it in a defspec"
-  [model]
+  [model & {:keys [num-calls]
+            :or {num-calls 10}
+            :as _opts}]
   (validate! ::model model)
   (validate! ::methods (p/methods model))
 
-  (prop/for-all [calls (gen-calls model (p/initial-state model))]
+  (prop/for-all [calls (gen-calls model (p/initial-state model) :max-length num-calls)]
                 (->> calls
                      (every? (fn [c]
                                (and c
